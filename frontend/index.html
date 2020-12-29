@@ -6,6 +6,14 @@
     <title>Game Store</title>
 </head>
 <body>
+
+    <hr>
+    <h2>Login</h2>
+    <input type="text" name="email" id="email" placeholder="email">
+    <input type="password" name="password" id="password" placeholder="senha">
+    <button onclick="login()">Entrar</button>
+    <hr>
+
     <hr>
     <h4>Lista de Games</h4>
     <ul id="games">
@@ -28,6 +36,33 @@
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
+
+    function login(){
+        var emailField = document.getElementById('email');
+        var passwordField = document.getElementById('password');
+
+        var email = emailField.value;
+        var password = passwordField.value;
+
+        axios.post('http://localhost:5000/auth', {
+            email,
+            password
+        }).then(res =>{
+            var token = res.data.token;
+            localStorage.setItem("token", token);
+            axiosConfig.headers.Authorization = "Bearer " + localStorage.getItem("token");
+        }).catch(err =>{
+            alert("LOGIN INVALIDO!");
+        });
+
+    }
+
+    var axiosConfig = {
+        headers:{
+            Authorization: "Bearer " + localStorage.getItem("token")
+        }
+    }
+
     function createGame(){
         var titleInput = document.getElementById("title");
         var yearInput = document.getElementById("year");
@@ -97,7 +132,7 @@
        });
     }
 
-    axios.get('http://localhost:5000/games').then(res=>{
+    axios.get('http://localhost:5000/games', axiosConfig).then(res=>{
         var games = res.data;
         var list = document.getElementById("games");
 
